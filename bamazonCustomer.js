@@ -57,7 +57,7 @@ var showProducts = function () {
         });
     };
 
-    function puchaseProducts(id, restockAmt) {
+    function purchaseProducts(id, restockAmt) {
         connection.query("Select * FROM products WHERE item_id = " + id, function (err, res) {
             if (err) { console.log(err) };
 
