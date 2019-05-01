@@ -11,6 +11,8 @@ stock_quantity INTEGER (10),
 PRIMARY KEY (item_id)
 );
 
+Select * FROM products;
+
 INSERT INTO products (item_id, product_name, department_name, price, stock_quantity)
 VALUES (4214, "Instant Pot Pressure Cooker", "Home & Kitchen", 49.99, 1500);
 
