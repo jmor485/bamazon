@@ -76,5 +76,5 @@ var showProducts = function () {
             showProducts();
         });
     };
-    showProducts();
 }
+showProducts();
