@@ -15,66 +15,88 @@ connection.connect(function (err) {
 });
 
 var showProducts = function () {
-    var query = "Select * FROM products";
-    connection.query(query, function (err, res) {
+    queryStr = "Select * FROM products";
+
+    connection.query(queryStr, function (err, res) {
         if (err) throw err;
+
+        console.log("View existing inventory: ");
+
         var displayTable = new Table({
             head: ["Item ID", "Product Name", "Department Name", "Price", "Stock Quantity"],
             colWidths: [10, 25, 25, 10, 10]
         });
+
         for (var i = 0; i < res.length; i++) {
             displayTable.push(
                 [res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]
             );
+
         }
         console.log(displayTable.toString());
         userPrompt();
     });
-
 
     function userPrompt() {
 
         inquirer.prompt([
             {
                 type: "input",
-                name: "id",
+                name: "item_id",
                 message: "What is the item ID of the product you wish to purchase?",
                 filter: Number
             },
             {
                 type: "input",
-                name: "quantitiy",
+                name: "quantity",
                 message: "How many units of the product would you like to buy?",
                 filter: Number
             },
 
-        ]).then(function (answers) {
+        ]).then(function (input) {
 
-            var desiredQuantity = answers.quantity;
-            var productID = answers.id;
-            purchaseProducts(productID, desiredQuantity);
+            console.log("\n---------------------------------\n");
 
-        });
-    };
+            var quantity = input.quantity;
+            var item = input.item_id;
 
-    function purchaseProducts(id, restockAmt) {
-        connection.query("Select * FROM products WHERE item_id = " + id, function (err, res) {
-            if (err) { console.log(err) };
+            var queryStr = "Select * FROM products WHERE ?";
+            connection.query(queryStr, { item_id: item }, function (err, res) {
+                if (err) throw (err);
 
-            if (restockAmt <= res[0].stock_quantity) {
-                var totalCost = res[0].price * restockAmt;
-                console.log("YAY! Your order is in stock!");
-                console.log("Your total cost for " + restockAmt + " "
-                    + res[0].product_name + " is " + totalCost + " Thank you!");
+                if (res.length === 0) {
+                    console.log("ERROR! Enter valid item ID.");
+                    showProducts();
 
+                } else {
+                    var productData = res[0];
+                    if (quantity <= productData.stock_quantity) {
+                        console.log("YAY! Your product is in stock! Ordering now.");
 
-                connection.query("UPDATE products SET stock_quantity = stock_quantity - " + restockAmt + "WHERE item_id = " + id);
-            }
-            else {
-                console.log("OH NO! Insufficient quantity... " + res[0].product_name + "try again.");
-            };
-            showProducts();
-        });
-    };
+                        var updatedQueryStr = 'UPDATE products SET stock_quantity = ' +
+                            (productData.stock_quantity - quantity) + ' WHERE item_id = ' + item;
+
+                        connection.query(updatedQueryStr, function (err, res) {
+                            if (err) throw (err);
+
+                            console.log("CONGRATS! Your order has been placed.");
+                            console.log("Your total cost for " + productData.product_name + " is $" + productData.price * quantity);
+                            console.log("Thank you for shopping with us at BAMAZON!");
+                            console.log("\n---------------------------------\n");
+
+                            connection.end();
+                        })
+                    } else {
+                        console.log("OH NO! Insufficient quantity of " + res[0].product_name);
+                        console.log("Cannot place order as is. Please adjust your order.");
+                        console.log("\n---------------------------------\n");
+
+                        showProducts();
+                    }
+                }
+            })
+        }
+        )
+    }
 }
 showProducts();
