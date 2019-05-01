@@ -66,6 +66,7 @@ var showProducts = function () {
 
                 if (res.length === 0) {
                     console.log("ERROR! Enter valid item ID.");
+                    console.log("\n---------------------------------\n");
                     showProducts();
 
                 } else {
@@ -87,8 +88,8 @@ var showProducts = function () {
                             connection.end();
                         })
                     } else {
-                        console.log("OH NO! Insufficient quantity of " + res[0].product_name);
-                        console.log("Cannot place order as is. Please adjust your order.");
+                        console.log("OH NO! Insufficient quantity of " + res[0].product_name + ".");
+                        console.log("Cannot place order as is. Please adjust your item quantity.");
                         console.log("\n---------------------------------\n");
 
                         showProducts();
