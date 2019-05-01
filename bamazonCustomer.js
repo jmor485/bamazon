@@ -20,10 +20,13 @@ var showProducts = function () {
     connection.query(queryStr, function (err, res) {
         if (err) throw err;
 
+        console.log("\n");
+        console.log("HELLO! Welcome to BAMAZON!");
         console.log("View existing inventory: ");
+        console.log("\n");
 
         var displayTable = new Table({
-            head: ["Item ID", "Product Name", "Department Name", "Price", "Stock Quantity"],
+            head: ["Item ID", "Product Name", "Department Name", "Price $", "Stock Quantity"],
             colWidths: [10, 25, 25, 10, 10]
         });
 
@@ -34,6 +37,7 @@ var showProducts = function () {
 
         }
         console.log(displayTable.toString());
+        console.log("\n");
         userPrompt();
     });
 
@@ -65,8 +69,9 @@ var showProducts = function () {
                 if (err) throw (err);
 
                 if (res.length === 0) {
-                    console.log("ERROR! Enter valid item ID.");
-                    console.log("\n---------------------------------\n");
+                    console.log("ERROR! Product not found...");
+                    console.log("Please enter valid item ID.");
+                    console.log("\n---------------------------------");
                     showProducts();
 
                 } else {
@@ -81,7 +86,7 @@ var showProducts = function () {
                             if (err) throw (err);
 
                             console.log("CONGRATS! Your order has been placed.");
-                            console.log("Your total cost for " + productData.product_name + " is $" + productData.price * quantity);
+                            console.log("Your total cost for " + productData.product_name + " is $" + productData.price * quantity + ".");
                             console.log("Thank you for shopping with us at BAMAZON!");
                             console.log("\n---------------------------------\n");
 
